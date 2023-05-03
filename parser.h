@@ -46,6 +46,7 @@ enum {
     OBJECT = 267,
     NAN = 268,
     INF = 269,
+    HEX = 270,
 };
 
 struct kind {
@@ -162,6 +163,7 @@ struct json {
     object get_object() { return this->get<object>(); }
 
     std::string toString(bool hex = false);
+    std::string toPrettyString(bool hex = false);
 
     template<class T>
     T get() { return this->template cast<T>(); }
@@ -169,6 +171,8 @@ struct json {
     template<typename _T>
     _T cast() { return dynamic_cast<data<_T>*>(ptr.get())->v; }
 
+    bool pretty{false};
+    std::string identity{};
     std::shared_ptr<base> ptr{nullptr};
     const char *name = nullptr;
 };
@@ -205,6 +209,8 @@ std::shared_ptr<kind> make_YYERROR(location loc);
 std::shared_ptr<kind> make_DOBLE(double d, location loc);
 
 std::shared_ptr<kind> make_BOOL(bool b, location loc) ;
+
+std::shared_ptr<kind> make_HEX(long i, const std::string &v, location loc);
 
 std::shared_ptr<kind> make_STRING(const std::string &str, location loc);
 

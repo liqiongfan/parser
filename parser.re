@@ -34,6 +34,10 @@ std::shared_ptr<kind> make_BOOL(bool b, location loc) {
     return std::make_shared<symbol<bool>>(BOOL, b, loc);
 }
 
+std::shared_ptr<kind> make_HEX(long i, const std::string &v, location loc) {
+    return std::make_shared<symbol<json::hex>>(HEX, json::hex(i, v), loc);
+}
+
 std::shared_ptr<kind> make_STRING(const std::string &str, location loc) {
     return std::make_shared<symbol<std::string>>(STRING, str, loc);
 }
@@ -72,18 +76,77 @@ std::string json::get_string() {
     }
 }
 
+
+
+std::string json::toPrettyString(bool hex) {
+    this->pretty = true;
+    return this->toString(hex);
+}
+
 std::string json::toString(bool hex)
 {
     if (this->is_array()) {
+        if (this->pretty) this->identity.append("\t");
         std::string str = "[";
         auto v = this->get_array();
+        if (this->pretty && !this->identity.empty()) {
+            str.append("\n");
+        }
         for (auto i = 0; i < v.size(); i++) {
-            str = str.append(v.at(i).toString(hex));
+            if (this->pretty && !this->identity.empty()) {
+                str.append(this->identity);
+                auto e = v.at(i);
+                e.pretty = this->pretty;
+                e.identity = this->identity;
+                str = str.append(e.toString(hex));
+            } else {
+                str = str.append( v.at(i).toString(hex));
+            }
             if (i < v.size() - 1) {
                 str = str.append(",");
+                if ( this->pretty && !this->identity.empty()) {
+                    str.append("\n");
+                }
             }
         }
+        if (this->pretty && !this->identity.empty()) {
+            this->identity = this->identity.substr(0, this->identity.size()-1);
+            str.append("\n").append(this->identity);
+        }
         return str.append("]");
+    }
+
+    if (this->is_object()) {
+        if (this->pretty) this->identity.append("\t");
+        auto i = 0;
+        auto m = this->get_object();
+        std::string str = "{";
+        if (this->pretty && !this->identity.empty()) {
+            str.append("\n");
+        }
+        for (auto begin = m.begin(); begin != m.end(); begin++, i++) {
+            if (this->pretty && !this->identity.empty()) {
+                str.append(this->identity).append("\"").append(begin->first).append("\":");
+                begin->second.pretty = this->pretty;
+                begin->second.identity = this->identity;
+                str = str.append(begin->second.toString(hex));
+            } else {
+                str = str.append("\"").append(begin->first).append("\":");
+                str = str.append(begin->second.toString(hex));
+            }
+            if (i < m.size() -1) {
+                str = str.append(",");
+                if (this->pretty && !this->identity.empty()) {
+                    str.append("\n");
+                }
+            }
+        }
+        if (this->pretty && !this->identity.empty()) {
+            this->identity = this->identity.substr(0, this->identity.size()-1);
+            str.append("\n").append(this->identity);
+        }
+
+        return str.append("}");
     }
 
     if (this->is_double()) {
@@ -141,23 +204,8 @@ std::string json::toString(bool hex)
         }
     }
 
-    if (this->is_object()) {
-        auto i = 0;
-        auto m = this->get_object();
-        std::string str = "{";
-        for (auto begin = m.begin(); begin != m.end(); begin++, i++) {
-            str = str.append("\"").append(begin->first).append("\":");
-            str = str.append(begin->second.toString(hex));
-            if (i < m.size() -1) {
-                str = str.append(",");
-            }
-        }
-        return str.append("}");
-    }
-
     return "";
 }
-
 
 template<>
 json::json(std::initializer_list<json> t): ptr( new data<array>(t) ) { name = typeid(array).name(); }
@@ -189,6 +237,8 @@ json parser::get_token_value(std::shared_ptr<kind> token) {
             return json::null();
         case NAN:
             return get_value<json::nan>(token);
+        case HEX:
+            return get_value<json::hex>(token);
         case INF:
             return get_value<json::infinity>(token);
         case '{':
@@ -409,7 +459,7 @@ LABEL	= [a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*;
     s.loc.columns(s.begin - begin);
     std::string t(begin, s.begin);
     long i = std::strtol(t.data(), nullptr, 16);
-    return make_LONG(i, s.loc);
+    return make_HEX(i, t, s.loc);
 }
 
 <JSON> 'null' {
