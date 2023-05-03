@@ -180,6 +180,7 @@ struct parser {
     json parse_value();
     json::object parse_object();
     json::array parse_array();
+    json get_token_value(std::shared_ptr<kind> v);
     std::string exitWithError(const std::string &msg) {
         std::string message{};
         if (s.limit == s.begin - 1) {

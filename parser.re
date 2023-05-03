@@ -174,8 +174,8 @@ json parser::parse(const std::string &buffer) {
     return this->parse_value();
 }
 
-json parser::parse_value() {
-    auto token = yylex(s);
+
+json parser::get_token_value(std::shared_ptr<kind> token) {
     switch (token->token) {
         case LONG:
             return get_value<long>(token);
@@ -200,10 +200,15 @@ json parser::parse_value() {
     }
 }
 
+json parser::parse_value() {
+    auto token = yylex(s);
+    return this->get_token_value(token);
+}
+
 
 json::object parser::parse_object() {
     json::object obj;
-    more_kvs:
+more_kvs:
     auto field = yylex(s);
     if (field->token == '}') {
         return obj;
@@ -230,43 +235,12 @@ json::object parser::parse_object() {
 
 json::array parser::parse_array() {
     json::array array;
-    more_elements:
+more_elements:
     auto ele = yylex(s);
     if (ele->token == ']') {
         return array;
     }
-    json e;
-    switch (ele->token) {
-        case LONG:
-            e = get_value<long>(ele);
-            break;
-        case DOUBLE:
-            e = get_value<double>(ele);
-            break;
-        case BOOL:
-            e = get_value<bool>(ele);
-            break;
-        case STRING:
-            e = get_value<std::string>(ele);
-            break;
-        case NUL:
-            e = json::null();
-            break;
-        case NAN:
-            e = get_value<json::nan>(ele);
-            break;
-        case INF:
-            e = get_value<json::infinity>(ele);
-            break;
-        case '{':
-            e = this->parse_object();
-            break;
-        case '[':
-            e = this->parse_array();
-            break;
-        default:
-            throw exitWithError("Unknown token");
-    }
+    json e = this->get_token_value(ele);
     array.push_back(e);
     auto deli = yylex(s);
     if (deli->token == ']') {
