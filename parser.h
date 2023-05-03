@@ -44,7 +44,7 @@ enum {
     NUL = 265,
     ARRAY = 266,
     OBJECT = 267,
-    NAN = 268,
+    NaN = 268,
     INF = 269,
     HEX = 270,
 };

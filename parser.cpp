@@ -236,7 +236,7 @@ json parser::get_token_value(std::shared_ptr<kind> token) {
             return get_value<std::string>(token);
         case NUL:
             return json::null();
-        case NAN:
+        case NaN:
             return get_value<json::nan>(token);
         case HEX:
             return get_value<json::hex>(token);
