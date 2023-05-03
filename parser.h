@@ -171,6 +171,7 @@ struct json {
     template<typename _T>
     _T cast() { return dynamic_cast<data<_T>*>(ptr.get())->v; }
 
+private:
     bool pretty{false};
     std::string identity{};
     std::shared_ptr<base> ptr{nullptr};
