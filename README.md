@@ -11,7 +11,6 @@ C Language press this to obtain: [Zua](https://github.com/liqiongfan/Zua)
 <https://github.com/liqiongfan/Zua>
 
 # Requirements
-+ `make`
 + `g++` or `clang++` with compile arg: `-std=c++11`
 
 
