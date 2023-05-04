@@ -61,7 +61,7 @@ std::shared_ptr<kind> make_OBJECT(location loc) {
 }
 
 std::shared_ptr<kind> make_NAN(json::nan n,location loc) {
-    return std::make_shared<symbol<json::nan>>(NAN, n, loc);
+    return std::make_shared<symbol<json::nan>>(NaN, n, loc);
 }
 
 std::shared_ptr<kind> make_INF(json::infinity i,location loc) {
