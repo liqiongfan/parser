@@ -60,7 +60,7 @@ std::shared_ptr<kind> make_OBJECT(location loc) {
 }
 
 std::shared_ptr<kind> make_NAN(json::nan n,location loc) {
-    return std::make_shared<symbol<json::nan>>(NAN, n, loc);
+    return std::make_shared<symbol<json::nan>>(NaN, n, loc);
 }
 
 std::shared_ptr<kind> make_INF(json::infinity i,location loc) {
@@ -235,7 +235,7 @@ json parser::get_token_value(std::shared_ptr<kind> token) {
             return get_value<std::string>(token);
         case NUL:
             return json::null();
-        case NAN:
+        case NaN:
             return get_value<json::nan>(token);
         case HEX:
             return get_value<json::hex>(token);
