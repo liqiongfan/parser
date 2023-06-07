@@ -44,7 +44,7 @@ Copy `parser.h` and `parser.cpp` into your project, after that, include `parser.
 
 ```c++
 #include <iostream>
-#include "json_language.hh"
+#include "parser.h"
 
 int main()
 {
@@ -118,7 +118,7 @@ output:
 ```C++
 
 #include <iostream>
-#include "json_language.hh"
+#include "parser.h"
 
 
   json::array vec;
