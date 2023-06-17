@@ -1,3 +1,5 @@
+target: run
+
 build:
 	re2c --no-generation-date -bci parser.re -o parser.cpp
 
