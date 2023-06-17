@@ -8,7 +8,6 @@
 #include "parser.h"
 #include <vector>
 #include <unordered_map>
-#include <memory>
 
 struct position {
     explicit position(int l, int c) : line(l), column(c) {}
